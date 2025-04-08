@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forex Algo Trading</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+
+  <!-- Navbar -->
+  <header class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white shadow">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">ForexAlgoTrading</h1>
+      <nav class="space-x-4">
+        <a href="#login" class="hover:underline">Login</a>
+        <a href="#features" class="hover:underline">Features</a>
+        <a href="#connect" class="hover:underline">Broker</a>
+        <a href="#strategy" class="hover:underline">Strategy</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="text-center py-24 bg-gray-50" id="hero">
+    <h2 class="text-4xl font-bold mb-4">Automated Forex Trading with AI</h2>
+    <p class="text-lg max-w-xl mx-auto mb-6">Connect your broker, build your strategy, and let our AI bot trade 24/7 for you.</p>
+    <a href="#login" class="bg-indigo-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-indigo-700 transition">Start Now</a>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-20 bg-white text-center">
+    <div class="max-w-6xl mx-auto">
+      <h3 class="text-2xl font-bold mb-10">Platform Features</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div class="p-6 shadow rounded bg-gray-50">
+          <h4 class="font-semibold text-lg mb-2">Broker Integration</h4>
+          <p>Connect with major brokers securely.</p>
+        </div>
+        <div class="p-6 shadow rounded bg-gray-50">
+          <h4 class="font-semibold text-lg mb-2">Custom Strategies</h4>
+          <p>Upload your own logic and let the system handle trades.</p>
+        </div>
+        <div class="p-6 shadow rounded bg-gray-50">
+          <h4 class="font-semibold text-lg mb-2">Live Trading Logs</h4>
+          <p>View live updates of every trade and decision made by the bot.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login & Register -->
+  <div class="max-w-4xl mx-auto p-6" id="login">
+    <h2 class="text-2xl font-bold mb-6 text-center">Login or Register</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div>
+        <h3 class="text-xl font-semibold">Register</h3>
+        <input type="email" id="regEmail" placeholder="Email" class="w-full p-2 border mb-2" />
+        <input type="password" id="regPass" placeholder="Password" class="w-full p-2 border mb-2" />
+        <button onclick="register()" class="bg-blue-600 text-white px-4 py-2 rounded">Register</button>
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold">Login</h3>
+        <input type="email" id="logEmail" placeholder="Email" class="w-full p-2 border mb-2" />
+        <input type="password" id="logPass" placeholder="Password" class="w-full p-2 border mb-2" />
+        <button onclick="login()" class="bg-green-600 text-white px-4 py-2 rounded">Login</button>
+      </div>
+    </div>
+
+    <!-- Broker Section -->
+    <div class="mb-6" id="connect">
+      <h3 class="text-xl font-semibold mb-2">Connect Broker</h3>
+      <select id="brokerName" class="w-full p-2 border mb-2">
+        <option value="zerodha">Zerodha</option>
+        <option value="fyers">Fyers</option>
+        <option value="angel">Angel One</option>
+      </select>
+      <input type="text" id="brokerKey" placeholder="API Key" class="w-full p-2 border mb-2" />
+      <input type="text" id="brokerSecret" placeholder="API Secret" class="w-full p-2 border mb-2" />
+      <button onclick="connectBroker()" class="bg-purple-600 text-white px-4 py-2 rounded">Connect</button>
+    </div>
+
+    <!-- Strategy -->
+    <div class="mb-6" id="strategy">
+      <h3 class="text-xl font-semibold mb-2">Submit Strategy</h3>
+      <textarea id="strategyCode" rows="6" placeholder="Paste your strategy code here..." class="w-full p-2 border mb-2"></textarea>
+      <button onclick="runStrategy()" class="bg-indigo-600 text-white px-4 py-2 rounded">Run Strategy</button>
+    </div>
+
+    <div id="output" class="bg-white p-4 border rounded"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 bg-gray-100 text-gray-600">
+    &copy; 2025 ForexAlgoTrading. All rights reserved.
+  </footer>
+
+  <script>
+    let token = "";
+
+    async function register() {
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPass').value;
+      const res = await fetch('http://localhost:8000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      document.getElementById('output').innerText = await res.text();
+    }
+
+    async function login() {
+      const email = document.getElementById('logEmail').value;
+      const password = document.getElementById('logPass').value;
+      const res = await fetch('http://localhost:8000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      token = data.access_token;
+      document.getElementById('output').innerText = 'Logged in successfully';
+    }
+
+    async function connectBroker() {
+      const broker = document.getElementById('brokerName').value;
+      const api_key = document.getElementById('brokerKey').value;
+      const api_secret = document.getElementById('brokerSecret').value;
+      const res = await fetch('http://localhost:8000/connect', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ broker, api_key, api_secret })
+      });
+      document.getElementById('output').innerText = await res.text();
+    }
+
+    async function runStrategy() {
+      const code = document.getElementById('strategyCode').value;
+      const res = await fetch('http://localhost:8000/run-strategy', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code })
+      });
+      const result = await res.json();
+      document.getElementById('output').innerText = JSON.stringify(result, null, 2);
+    }
+  </script>
+
+</body>
+</html>
